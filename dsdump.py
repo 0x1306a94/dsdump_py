@@ -17,6 +17,9 @@ print('''
 
 howToUse = 'python3 dsdump.py \n -i <inputfile> \n -o <outputfile> \n -a [ arm64 | armv7 ] \n -d'
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DSDUMP_BIN = os.path.join(SCRIPT_DIR, 'dsdump')
+
 
 def main(argv):
     inputfile = ''
@@ -24,7 +27,8 @@ def main(argv):
     arches = 'arm64'
     demangle = False
     try:
-        opts, args = getopt.getopt(argv, "hi:o:a:d", ["ifile=", "ofile=", "arches=", "demangle"])
+        opts, args = getopt.getopt(
+            argv, "hi:o:a:d", ["ifile=", "ofile=", "arches=", "demangle"])
     except getopt.GetoptError:
         print('')
         sys.exit(0)
@@ -58,8 +62,11 @@ def main(argv):
 
 
 def dumpObjectiveC(inputfile, outputfile, arches, demangle):
-    strline = f'./dsdump -a {arches} --objc --verbose=5 "{inputfile}"'
-    p = subprocess.Popen(strline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+        [DSDUMP_BIN, '-a', arches, '--objc', '--verbose=5', inputfile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     out = p.communicate()[0].decode('utf-8', 'ignore')
     arr = out.split('\n\n\n')
     # 分割输出内容
@@ -127,8 +134,11 @@ def dumpObjectiveC(inputfile, outputfile, arches, demangle):
 
 
 def dumpSwift(inputfile, outputfile, arches, demangle):
-    strline = f'./dsdump -a {arches} --swift --verbose=5 "{inputfile}"'
-    p = subprocess.Popen(strline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+        [DSDUMP_BIN, '-a', arches, '--swift', '--verbose=5', inputfile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     out = p.communicate()[0].decode('utf-8', 'ignore')
     arr = out.split('\n')
     className = ''
